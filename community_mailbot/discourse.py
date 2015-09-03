@@ -133,3 +133,76 @@ class TopicFeed(object):
     def first_post_author_real_name(self):
         """Display name of the topic's original poster."""
         return self._feed['post_stream']['posts'][0]['display_username']
+
+
+class TopicCache(object):
+    """Cache of topics already seen/processed.
+
+    The cache is stored in a JSON-formatted file. The parent object is a
+    ``dict``, keyed by the topic's slug. Value is a dict with fields
+
+    - `created_at` (an ISO datetime string)
+    - `category` (a string)
+
+    .. note::
+
+        In the future this JSON cache could be converted into an sqlite DB
+        for performance.
+
+    Parameters
+    ----------
+    cache_path : str
+        File path to the cache file. The cache will be created if it does
+        not alreay exist.
+    """
+    def __init__(self, cache_path):
+        super(TopicCache, self).__init__()
+        self._path = cache_path
+
+        try:
+            self._cache = self._load_cache()
+        except IOError:
+            # start a brand new cache
+            self._cache = {}
+
+    def _load_cache(self):
+        with open(self._path, 'r') as f:
+            cache = json.load(f)
+        return cache
+
+    def __len__(self):
+        return len(self._cache)
+
+    def __getitem__(self, key):
+        return self._cache[key]
+
+    def __contains__(self, key):
+        if key in self._cache:
+            return True
+        else:
+            return False
+
+    def add(self, topic_slug, category_id=None, created_at=None):
+        """Add a topic to the cache.
+
+        Parameters
+        ----------
+        topic_slug : str
+            The url-friendly shortname for the topic. Topics are keyed in the
+            cache by slug.
+        category_id : int
+            The identifier for the category containing the topic.
+        created_at : str
+            The ISO datetime string for when the topic was created.
+        """
+        self._cache[topic_slug] = {'category_id': category_id,
+                                   'created_at': created_at}
+
+    def save(self):
+        """Save the cache onto the filesystem."""
+        dirname = os.path.dirname(self._path)
+        if (dirname is not '') and (dirname is not os.path.exists(dirname)):
+            os.makedirs(dirname)
+
+        with open(self._path, 'w') as f:
+            json.dump(self._cache, f, indent=2)
