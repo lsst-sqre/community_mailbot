@@ -49,6 +49,23 @@ class CategoryFeed(object):
         r.raise_for_status()  # can raise requests.exceptions.HTTPError
         return r.json()
 
+    def new_topics(self, cache):
+        """New topics in the feed that aren't cached.
+
+        Parameters
+        ----------
+        cache : :class:`TopicCache`
+            A :class:`TopicCache` instance.
+
+        Returns
+        -------
+        topic_list : list
+            A list of new topic slugs (``str``) that aren't already in
+            the ``cache``.
+        """
+        return [t['slug'] for t in self._feed['topic_list']['topics']
+                if t['slug'] not in cache]
+
 
 class TopicFeed(object):
     """JSON feed from a Discourse topic.
