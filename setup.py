@@ -54,6 +54,7 @@ setup(
     entry_points={
         'console_scripts': [
             'forward_discourse=community_mailbot.scripts.forward_discourse:main',  # NOQA
+            'discourse_categories=community_mailbot.scripts.discourse_categories:main',  # NOQA
         ],
     },
 )
