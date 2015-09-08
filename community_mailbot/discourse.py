@@ -10,6 +10,49 @@ import json
 import requests
 
 
+class SiteFeed(object):
+    """Access to Discourse's site.json
+
+    Parameters
+    ----------
+    base_url : str
+        Root URL of the Discourse forum.
+    key : str, optional
+        Discourse API key, needed for working with private categories.
+    user : str, optional
+        Discourse API username, needed for working with private categories.
+    """
+    def __init__(self, base_url, key=None, user=None):
+        super(SiteFeed, self).__init__()
+        self._base_url = base_url
+        self._key = key
+        self._user = user
+
+        self._feed = self._fetch_feed()
+
+    @property
+    def url(self):
+        """JSON feed URL."""
+        return urljoin(self._base_url, 'site.json')
+
+    def _fetch_feed(self):
+        """Get the category's JSON feed and parse it into a Python dict."""
+        params = {}
+        if self._key is not None:
+            params['api_key'] = self._key
+        if self._user is not None:
+            params['api_user'] = self._user
+        r = requests.get(self.url, params=params)
+        r.raise_for_status()  # can raise requests.exceptions.HTTPError
+        return r.json()
+
+    @property
+    def category_names(self):
+        """A dict that maps category ID (int) to the full category name (str).
+        """
+        return {c['id']: c['name'] for c in self._feed['categories']}
+
+
 class CategoryFeed(object):
     """JSON feed from a specific category.
 
