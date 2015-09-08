@@ -37,7 +37,8 @@ from argparse import ArgumentParser, RawDescriptionHelpFormatter
 import requests
 import mandrill
 
-from community_mailbot.discourse import CategoryFeed, TopicFeed, TopicCache
+from community_mailbot.discourse import (CategoryFeed, TopicFeed, TopicCache,
+                                         SiteFeed)
 
 
 def main():
@@ -102,6 +103,8 @@ def forward_new_topics(mapping, cache_path,
     Each category is processed and the cache is persisted at the end.
     """
     cache = TopicCache(cache_path)
+    site_feed = SiteFeed(base_url, key=discourse_key, user=discourse_user)
+    category_names = site_feed.category_names
 
     for category_id, recipients in mapping.items():
         cat_feed = CategoryFeed(category_id, base_url,
@@ -109,14 +112,15 @@ def forward_new_topics(mapping, cache_path,
         for topic_slug in cat_feed.new_topics(cache):
             forward_topic(topic_slug, category_id, recipients, cache,
                           base_url, discourse_key, discourse_user,
-                          mandrill_key, cache_only)
+                          mandrill_key, cache_only,
+                          category_names[int(category_id)])
 
     cache.save()
 
 
 def forward_topic(topic_slug, category_id, recipients, cache,
                   base_url, discourse_key, discourse_user, mandrill_key,
-                  cache_only):
+                  cache_only, category_name):
     """Forward a topic post to the destination email addresses.
 
     The topic is cached once it is successfuly posted.
@@ -153,6 +157,9 @@ def forward_topic(topic_slug, category_id, recipients, cache,
              'content': topic.html_url}
         ]
 
+        subject = '[{category}] {title}'.format(category=category_name,
+                                                title=topic.title)
+
         mandrill_client = mandrill.Mandrill(mandrill_key)
         message = {
             'from_email': 'noreply@community.lsst.org',
@@ -164,7 +171,7 @@ def forward_topic(topic_slug, category_id, recipients, cache,
             'track_clicks': False,
             'signing_domain': None,  # TODO
             'subaccount': 'community_mailbot',
-            'subject': topic.title,
+            'subject': subject,
             'html': topic.first_post_content,
             'global_merge_vars': global_merge,
         }
