@@ -5,25 +5,15 @@ List categories and their IDs in a Discourse forum.
 
 import os
 from argparse import ArgumentParser
-from urllib.parse import urljoin
-import requests
+from community_mailbot.discourse import SiteFeed
 
 
 def main():
     args = parse_args()
 
-    params = {}
-    if args.key is not None:
-        params['api_key'] = args.key
-    if args.user is not None:
-        params['api_username'] = args.user
-
-    url = urljoin(args.url, 'site.json')
-    r = requests.get(url, params=params)
-    r.raise_for_status()
-    site_feed = r.json()
-    for c in site_feed['categories']:
-        print(c['id'], c['name'])
+    site_feed = SiteFeed(args.url, user=args.user, key=args.key)
+    for c_id, name in site_feed.category_names.items():
+        print(c_id, name)
 
 
 def parse_args():
@@ -34,7 +24,7 @@ def parse_args():
         help='Discourse API key')
     parser.add_argument(
         '--user',
-        default=os.getenv('DISCOURSE_KEY', None),
+        default=os.getenv('DISCOURSE_USER', None),
         help='Discourse API user')
     parser.add_argument(
         '--url',
