@@ -154,7 +154,9 @@ def forward_topic(topic_slug, category_id, recipients, cache,
             {'name': 'BODY_CONTENT',
              'content': topic.first_post_content},
             {'name': 'TOPIC_URL',
-             'content': topic.html_url}
+             'content': topic.html_url},
+            {'name': 'TOPIC_AUTHOR',
+             'content': topic.first_post_author_real_name}
         ]
 
         subject = '[{category}] {title}'.format(category=category_name,
@@ -177,7 +179,7 @@ def forward_topic(topic_slug, category_id, recipients, cache,
         }
         try:
             result = mandrill_client.messages.send_template(
-                template_name='community-mailbot-template-1',
+                template_name='community-mailbot-template-2',
                 template_content=template_content,
                 message=message,
                 async=False)
