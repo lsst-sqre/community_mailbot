@@ -30,6 +30,15 @@ Optionally set ``$COMMUNITY_MAILBOT_CACHE`` to the location where you want the M
 
 The help message describes a configuration JSON file that you should create that maps Discourse topics to destination email addresses.
 
+Running tests
+-------------
+
+To run the test suite you'll need to clone the repository and run ``unittest``::
+
+    git clone https://github.com/lsst-sqre/community_mailbot.git
+    cd community_mailbot
+    python -m unittest discover -s community_mailbot/tests
+
 
 License
 -------

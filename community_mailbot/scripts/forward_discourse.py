@@ -39,6 +39,7 @@ import mandrill
 
 from community_mailbot.discourse import (CategoryFeed, TopicFeed, TopicCache,
                                          SiteFeed)
+from community_mailbot.contentpipe import clean_discourse_html
 
 
 def main():
@@ -148,8 +149,8 @@ def forward_topic(topic_slug, category_id, recipients, cache,
         # https://mandrillapp.com/api/docs/messages.python.html#method-send
         # https://mandrill.zendesk.com/hc/en-us/articles/205582487-How-do-I-use-merge-tags-to-add-dynamic-content-
 
+        # Build messsage content
         template_content = []
-
         global_merge = [
             {'name': 'BODY_CONTENT',
              'content': topic.first_post_content},
@@ -158,11 +159,9 @@ def forward_topic(topic_slug, category_id, recipients, cache,
             {'name': 'TOPIC_AUTHOR',
              'content': topic.first_post_author_real_name}
         ]
-
         subject = '[{category}] {title}'.format(category=category_name,
                                                 title=topic.title)
-
-        mandrill_client = mandrill.Mandrill(mandrill_key)
+        cleaned_html = clean_discourse_html(topic.first_post_content, base_url)
         message = {
             'from_email': 'noreply@community.lsst.org',
             'from_name': topic.first_post_author_real_name,
@@ -174,9 +173,12 @@ def forward_topic(topic_slug, category_id, recipients, cache,
             'signing_domain': None,  # TODO
             'subaccount': 'community_mailbot',
             'subject': subject,
-            'html': topic.first_post_content,
+            'html': cleaned_html,
             'global_merge_vars': global_merge,
         }
+
+        # Send message with Mandrill
+        mandrill_client = mandrill.Mandrill(mandrill_key)
         try:
             result = mandrill_client.messages.send_template(
                 template_name='community-mailbot-template-2',

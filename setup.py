@@ -44,10 +44,8 @@ setup(
     ],
     keywords='astronomy discourse email',
     packages=find_packages(exclude=['contrib', 'docs', 'tests*']),
-    install_requires=['requests', 'mandrill'],
-    tests_require=['pytest',
-                   'pytest-pep8',
-                   'pytest-cov'],
+    install_requires=['requests', 'mandrill', 'beautifulsoup4'],
+    tests_require=[],
 
     # package_data={},
 
