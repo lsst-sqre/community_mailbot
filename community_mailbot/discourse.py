@@ -4,10 +4,16 @@ Tools for reading the JSON API from a Discourse site.
 """
 
 import os
-from urllib.parse import urljoin
+from urllib.parse import urlunsplit, urlparse
 import json
+from collections import namedtuple
 
 import requests
+
+
+# Compatible with tuples form urllib.parse
+URL = namedtuple('URL', 'scheme netloc path query fragment')
+URL.__new__.__defaults__ = ('http', '', '', '', '', '')
 
 
 class SiteFeed(object):
@@ -33,7 +39,10 @@ class SiteFeed(object):
     @property
     def url(self):
         """JSON feed URL."""
-        return urljoin(self._base_url, 'site.json')
+        parts = urlparse(self._base_url, scheme='http', allow_fragments=True)
+        return urlunsplit(URL(scheme=parts.scheme,
+                              netloc=parts.netloc,
+                              path='site.json'))
 
     def _fetch_feed(self):
         """Get the category's JSON feed and parse it into a Python dict."""
@@ -79,7 +88,10 @@ class CategoryFeed(object):
     @property
     def url(self):
         """JSON feed URL."""
-        return urljoin(self._base_url, 'c/{0}.json'.format(self._category_id))
+        parts = urlparse(self._base_url, scheme='http', allow_fragments=True)
+        return urlunsplit(URL(scheme=parts.scheme,
+                              netloc=parts.netloc,
+                              path='c/{0}.json'.format(self._category_id)))
 
     def _fetch_feed(self):
         """Get the category's JSON feed and parse it into a Python dict."""
@@ -136,11 +148,16 @@ class TopicFeed(object):
     @property
     def url(self):
         """JSON feed URL."""
-        # Because requests is not adding these parameters to my URL!
-        url = urljoin(self._base_url, 't/{0}.json'.format(self._slug))
+        parts = urlparse(self._base_url, scheme='http', allow_fragments=True)
         if (self._key is not None) and (self._user is not None):
-            url += '?api_key={key}&api_user={user}'.format(key=self._key,
+            query = 'api_key={key}&api_user={user}'.format(key=self._key,
                                                            user=self._user)
+        else:
+            query = ''
+        url = urlunsplit(URL(scheme=parts.scheme,
+                             netloc=parts.netloc,
+                             path='t/{0}.json'.format(self._slug),
+                             query=query))
         return url
 
     def _fetch_feed(self):
@@ -166,8 +183,10 @@ class TopicFeed(object):
     @property
     def html_url(self):
         """Topic HTML URL."""
-        url = urljoin(self._base_url, 't/{0}'.format(self._slug))
-        return url
+        parts = urlparse(self._base_url, scheme='http', allow_fragments=True)
+        return urlunsplit(URL(scheme=parts.scheme,
+                              netloc=parts.netloc,
+                              path='t/{0}'.format(self._slug)))
 
     @property
     def datetime_iso(self):
