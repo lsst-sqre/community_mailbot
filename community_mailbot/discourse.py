@@ -280,7 +280,7 @@ class TopicCache(object):
     def save(self):
         """Save the cache onto the filesystem."""
         dirname = os.path.dirname(self._path)
-        if (dirname is not '') and (dirname is not os.path.exists(dirname)):
+        if (dirname is not '') and (os.path.exists(dirname) is False):
             os.makedirs(dirname)
 
         with open(self._path, 'w') as f:
