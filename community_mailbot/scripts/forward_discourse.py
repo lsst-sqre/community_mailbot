@@ -71,7 +71,8 @@ def parse_args():
         help='Path to JSON file mapping categories to E-mail addresses')
     parser.add_argument(
         '--cache',
-        help='Path to the topic cache file ({0})'.format(cache_default))
+        help='Path to the topic cache file ({0})'.format(cache_default),
+        default=cache_default)
     parser.add_argument(
         '--key',
         default=default_discourse_key,
