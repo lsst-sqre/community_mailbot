@@ -137,7 +137,7 @@ def forward_topic(topic_slug, category_id, recipients, cache,
 
     if int(topic.category_id) != int(category_id):
         # ensure topics from sub-categories aren't included
-        print('skipping {0}, {1} ≠ {2}'.format(topic_slug,
+        print('skipping {0}, {1} is not {2}'.format(topic_slug,
               topic.category_id,
               category_id))
         return
