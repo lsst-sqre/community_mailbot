@@ -13,7 +13,7 @@ DESCRIPTION = 'Friendly mail forwarding bot for community.lsst.org'
 LONG_DESCRIPTION = ''
 AUTHOR = 'Jonathan Sick'
 AUTHOR_EMAIL = 'jsick@lsst.org'
-LICENSE = 'GPLv3'
+LICENSE = 'MIT'
 URL = 'https://github.com/lsst-sqre/community_mailbot'
 
 
