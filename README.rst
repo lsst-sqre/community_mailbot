@@ -9,7 +9,7 @@ Installation
 
 Create a virtual environment running Python 3.5, then::
 
-    pip install git+https://github.com/lsst-sqre/community_mailbit.git@tickets/DM-3690
+    pip install git+https://github.com/lsst-sqre/community_mailbot.git@tickets/DM-3690
 
 
 Getting started
@@ -19,16 +19,17 @@ You'll need to get API keys from community.lsst.org and Mandrill.
 Set them to the following environment variables:
 
 * ``$MANDRILL_KEY`` (note, use the API key for the ``community_mailbot`` subaccount)
-* ``$DISCOURSE_KEY`` (the Discourse key should corresond to a user with sufficient permissions)
+* ``$DISCOURSE_KEY`` (the Discourse key should correspond to a user with sufficient permissions)
 * ``$DISCOURSE_USER``
 
-Optionally set ``$COMMUNITY_MAILBOT_CACHE`` to the location where you want the Mailbot to keep track of its sent topics.
+Optionally set ``$COMMUNITY_MAILBOT_CACHE`` to the location where you want the Mailbot to keep track of its topics it has forwarded.
 
 ``forward_discourse`` is the main script. To learn how to use it, run::
 
     forward_discourse --help
 
 The help message describes a configuration JSON file that you should create that maps Discourse topics to destination email addresses.
+The ``config.json`` file in this repo provides the reference configuration.
 
 Running tests
 -------------
