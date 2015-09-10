@@ -47,11 +47,11 @@ class SiteFeed(object):
     def _fetch_feed(self):
         """Get the category's JSON feed and parse it into a Python dict."""
         params = {}
-        if self._key is not None:
+        if (self._key is not None) and (self._user is not None):
             params['api_key'] = self._key
-        if self._user is not None:
             params['api_user'] = self._user
         r = requests.get(self.url, params=params)
+        print(r.url)
         r.raise_for_status()  # can raise requests.exceptions.HTTPError
         return r.json()
 
@@ -114,11 +114,11 @@ class CategoryFeed(object):
     def _fetch_feed(self):
         """Get the category's JSON feed and parse it into a Python dict."""
         params = {}
-        if self._key is not None:
+        if (self._key is not None) and (self._user is not None):
             params['api_key'] = self._key
-        if self._user is not None:
             params['api_user'] = self._user
         r = requests.get(self.url, params=params)
+        print(r.url)
         r.raise_for_status()  # can raise requests.exceptions.HTTPError
         return r.json()
 
@@ -165,28 +165,19 @@ class TopicFeed(object):
     def url(self):
         """JSON feed URL."""
         parts = urlparse(self._base_url, scheme='http', allow_fragments=True)
-        if (self._key is not None) and (self._user is not None):
-            query = 'api_key={key}&api_user={user}'.format(key=self._key,
-                                                           user=self._user)
-        else:
-            query = ''
         url = urlunsplit(URL(scheme=parts.scheme,
                              netloc=parts.netloc,
-                             path='t/{0}.json'.format(self._slug),
-                             query=query))
+                             path='t/{0}.json'.format(self._slug)))
         return url
 
     def _fetch_feed(self):
         """Get the topic's JSON feed and parse it into a Python dict."""
         # Surprisingly requests is not adding these parameters to my URL!
-        # params = {}
-        # if self._key is not None:
-        #     params['api_key'] = self._key
-        # if self._user is not None:
-        #     params['api_user'] = self._user
-        # print(params)
-        # r = requests.get(self.url, params=params)
-        r = requests.get(self.url)
+        params = {}
+        if (self._key is not None) and (self._user is not None):
+            params['api_key'] = self._key
+            params['api_user'] = self._user
+        r = requests.get(self.url, params=params)
         print(r.url)
         r.raise_for_status()  # can raise requests.exceptions.HTTPError
         return r.json()
