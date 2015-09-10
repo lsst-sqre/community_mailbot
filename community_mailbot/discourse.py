@@ -106,9 +106,10 @@ class CategoryFeed(object):
     def url(self):
         """JSON feed URL."""
         parts = urlparse(self._base_url, scheme='http', allow_fragments=True)
-        return urlunsplit(URL(scheme=parts.scheme,
-                              netloc=parts.netloc,
-                              path='c/{0}.json'.format(self._category_path)))
+        url = URL(scheme=parts.scheme,
+                  netloc=parts.netloc,
+                  path='c/{0}/l/latest.json'.format(self._category_path))
+        return urlunsplit(url)
 
     def _fetch_feed(self):
         """Get the category's JSON feed and parse it into a Python dict."""
