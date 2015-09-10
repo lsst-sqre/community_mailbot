@@ -107,9 +107,10 @@ def forward_new_topics(mapping, cache_path,
     cache = TopicCache(cache_path)
     site_feed = SiteFeed(base_url, key=discourse_key, user=discourse_user)
     category_names = site_feed.category_names
+    category_paths = site_feed.category_paths
 
     for category_id, recipients in mapping.items():
-        cat_feed = CategoryFeed(category_id, base_url,
+        cat_feed = CategoryFeed(category_paths[int(category_id)], base_url,
                                 key=discourse_key, user=discourse_user)
         for topic_slug in cat_feed.new_topics(cache):
             forward_topic(topic_slug, category_id, recipients, cache,

@@ -57,9 +57,26 @@ class SiteFeed(object):
 
     @property
     def category_names(self):
-        """A dict that maps category ID (int) to the full category name (str).
-        """
+        """dict mapping category ID (int) to the full category name (str)."""
         return {c['id']: c['name'] for c in self._feed['categories']}
+
+    @property
+    def category_paths(self):
+        """dict mapping category ID (int) to the category's URL path."""
+        paths = {}
+
+        # first pass: get only primary categories
+        for c in self._feed['categories']:
+            if 'parent_category_id' not in c:
+                paths[c['id']] = c['slug']
+
+        # second pass: get subcategories
+        for c in self._feed['categories']:
+            if 'parent_category_id' in c:
+                parent_slug = paths[c['parent_category_id']]
+                paths[c['id']] = '/'.join((parent_slug, c['slug']))
+
+        return paths
 
 
 class CategoryFeed(object):
@@ -67,8 +84,8 @@ class CategoryFeed(object):
 
     Parameters
     ----------
-    category_id : int
-        Category identifier.
+    category_path : str
+        The category's URL path.
     base_url : str
         Root URL of the Discourse forum.
     key : str, optional
@@ -76,9 +93,9 @@ class CategoryFeed(object):
     user : str, optional
         Discourse API username, needed for working with private categories.
     """
-    def __init__(self, category_id, base_url, key=None, user=None):
+    def __init__(self, category_path, base_url, key=None, user=None):
         super().__init__()
-        self._category_id = category_id
+        self._category_path = category_path
         self._base_url = base_url
         self._key = key
         self._user = user
@@ -91,7 +108,7 @@ class CategoryFeed(object):
         parts = urlparse(self._base_url, scheme='http', allow_fragments=True)
         return urlunsplit(URL(scheme=parts.scheme,
                               netloc=parts.netloc,
-                              path='c/{0}.json'.format(self._category_id)))
+                              path='c/{0}.json'.format(self._category_path)))
 
     def _fetch_feed(self):
         """Get the category's JSON feed and parse it into a Python dict."""
@@ -127,8 +144,6 @@ class TopicFeed(object):
 
     Parameters
     ----------
-    category_id : int
-        Category identifier.
     base_url : str
         Root URL of the Discourse forum.
     key : str, optional
