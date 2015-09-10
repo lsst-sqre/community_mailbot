@@ -79,7 +79,7 @@ def parse_args():
         help='Discourse API key ({0})'.format(default_discourse_key))
     parser.add_argument(
         '--user',
-        default=None,
+        default=default_discourse_user,
         help='Discourse API user ({0})'.format(default_discourse_user))
     parser.add_argument(
         '--url',
