@@ -217,7 +217,7 @@ class TopicFeed(object):
     @property
     def title(self):
         """The topic's title."""
-        return self._feed['fancy_title']
+        return self._feed['title']
 
     @property
     def first_post_content(self):
