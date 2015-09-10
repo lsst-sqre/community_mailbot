@@ -112,15 +112,16 @@ def forward_new_topics(mapping, cache_path,
     for category_id, recipients in mapping.items():
         cat_feed = CategoryFeed(category_paths[int(category_id)], base_url,
                                 key=discourse_key, user=discourse_user)
-        for topic_slug in cat_feed.new_topics(cache):
-            forward_topic(topic_slug, category_id, recipients, cache,
+        for topic in cat_feed.new_topics(cache):
+            forward_topic(topic.slug, topic.iid, category_id,
+                          recipients, cache,
                           base_url, discourse_key, discourse_user,
                           mandrill_key, cache_only,
                           category_names[int(category_id)])
             cache.save()
 
 
-def forward_topic(topic_slug, category_id, recipients, cache,
+def forward_topic(topic_slug, topic_id, category_id, recipients, cache,
                   base_url, discourse_key, discourse_user, mandrill_key,
                   cache_only, category_name):
     """Forward a topic post to the destination email addresses.
@@ -129,7 +130,7 @@ def forward_topic(topic_slug, category_id, recipients, cache,
     """
     print(topic_slug)
     try:
-        topic = TopicFeed(topic_slug, base_url,
+        topic = TopicFeed(topic_slug, topic_id, base_url,
                           key=discourse_key, user=discourse_user)
     except requests.exceptions.HTTPError:
         print('Bad Permissions {0} (skipping)'.format(topic_slug))

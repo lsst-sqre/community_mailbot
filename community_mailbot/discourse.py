@@ -15,6 +15,9 @@ import requests
 URL = namedtuple('URL', 'scheme netloc path query fragment')
 URL.__new__.__defaults__ = ('http', '', '', '', '', '')
 
+# Identification for a topic
+TopicID = namedtuple('TopicID', 'iid slug')
+
 
 class SiteFeed(object):
     """Access to Discourse's site.json
@@ -133,10 +136,11 @@ class CategoryFeed(object):
         Returns
         -------
         topic_list : list
-            A list of new topic slugs (``str``) that aren't already in
-            the ``cache``.
+            A list of new ``TopicID`` tuples with attributes ``iid`` (``int``)
+            and ``slug`` (``str``) of topics that aren't in the cache.
         """
-        return [t['slug'] for t in self._feed['topic_list']['topics']
+        return [TopicID(iid=t['id'], slug=t['slug'])
+                for t in self._feed['topic_list']['topics']
                 if t['slug'] not in cache]
 
 
@@ -145,6 +149,10 @@ class TopicFeed(object):
 
     Parameters
     ----------
+    topic_slug : str
+        Slug of the topic
+    topic_id : int
+        ID of the topic
     base_url : str
         Root URL of the Discourse forum.
     key : str, optional
@@ -152,8 +160,10 @@ class TopicFeed(object):
     user : str, optional
         Discourse API username, needed for working with private categories.
     """
-    def __init__(self, topic_slug, base_url, key=None, user=None):
+    def __init__(self, topic_slug, topic_id, base_url,
+                 key=None, user=None):
         super().__init__()
+        self._id = topic_id
         self._slug = topic_slug
         self._base_url = base_url
         self._key = key
@@ -167,7 +177,7 @@ class TopicFeed(object):
         parts = urlparse(self._base_url, scheme='http', allow_fragments=True)
         url = urlunsplit(URL(scheme=parts.scheme,
                              netloc=parts.netloc,
-                             path='t/{0}.json'.format(self._slug)))
+                             path='t/{0:d}.json'.format(self._id)))
         return url
 
     def _fetch_feed(self):
