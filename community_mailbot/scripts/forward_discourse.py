@@ -117,8 +117,7 @@ def forward_new_topics(mapping, cache_path,
                           base_url, discourse_key, discourse_user,
                           mandrill_key, cache_only,
                           category_names[int(category_id)])
-
-    cache.save()
+            cache.save()
 
 
 def forward_topic(topic_slug, category_id, recipients, cache,
