@@ -71,24 +71,24 @@ def parse_args():
         help='Path to JSON file mapping categories to E-mail addresses')
     parser.add_argument(
         '--cache',
-        help='Path to the topic cache file ({0})'.format(cache_default),
+        help='Path to the topic cache file (or $COMMUNITY_MAILBOT_CACHE)',
         default=cache_default)
     parser.add_argument(
         '--key',
         default=default_discourse_key,
-        help='Discourse API key ({0})'.format(default_discourse_key))
+        help='Discourse API key (or $DISCOURSE_KEY)')
     parser.add_argument(
         '--user',
         default=default_discourse_user,
-        help='Discourse API user ({0})'.format(default_discourse_user))
+        help='Discourse API user (or $DISCOURSE_USER)')
     parser.add_argument(
         '--url',
         default=default_url,
-        help='Base URL of the discourse forum ({0})'.format(default_url))
+        help='Base URL of the discourse forum')
     parser.add_argument(
         '--mandrill',
         default=default_mandrill_key,
-        help='MANDRILL API key ({0})'.format(default_mandrill_key))
+        help='MANDRILL API key (or $MANDRILL_KEY)')
     parser.add_argument(
         '--cache-only',
         default=False,
