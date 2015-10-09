@@ -4,8 +4,8 @@ community_mailbot
 
 The ``community_mailbot`` is a friendly bot that tells subscribers to LSST DM's legacy Mailman email lists about things happening on `community.lsst.org <http://community.lsst.org>`_.
 
-The bot likes to be awoken regularly by ``cron``; each time it will ask the Discourse server about latest messages in different categories that the bot tracks (you can set this with a simple ``config.json`` file).
-If there is are new topics, ``community_mailbot`` will send an email the appropriate email lists using its buddy, `Mandrill <http://mandrillapp.com>`_.
+The bot likes to be awakened regularly by ``cron``; each time it will ask the Discourse server about latest messages in different categories that the bot tracks (you can set this with a simple ``config.json`` file).
+If there is are new topics, ``community_mailbot`` will send an email to the appropriate email lists using its buddy, `Mandrill <http://mandrillapp.com>`_.
 Before the bot goes back to sleep, it keeps note of all the topics it's emailed already in a simple JSON cache file.
 
 Installation
@@ -13,7 +13,7 @@ Installation
 
 Create a virtual environment running Python 3.5, then:
 
-.. bash::
+.. code-block:: bash
 
    pip install git+https://github.com/lsst-sqre/community_mailbot.git@tickets/DM-3690
 
@@ -38,7 +38,7 @@ Setup Topic → Email Mapping
 To setup how Discourse categories are mapped to recipient email addresses, you need to know the integer IDs for each relevant category.
 To get these, run the included script:
 
-.. code:: bash
+.. code-block:: bash
 
    discourse_categories
 
@@ -48,7 +48,7 @@ Next, create a ``config.json`` file.
 It's a simple hash structure; each key-value pair is the Discourse category ID and a list of email recipients for that category.
 The general format is:
 
-.. code:: text
+.. code-block:: json
 
    {
        "<id>": [{"email": "<email address>",
@@ -56,15 +56,20 @@ The general format is:
                  "type": "to"}],
    }
 
+The structure of the ``dict`` in the value matches the `Mandrill send-template API`_.
+The ``"type"`` field should typically be ``"to"``, but could also be ``"cc"`` or ``"bcc"``.
+
+.. _`Mandrill send-template API`: https://mandrillapp.com/api/docs/messages.python.html#method-send-template
+
 Note that since the recipient information for each category is a ``list``, you can have multiple recipients.
 
 Pre-cache old topics
 ~~~~~~~~~~~~~~~~~~~~
 
 Before having the bot send emails, you'll want it to know about and ignore older messages.
-To warm up the cache, we'll run the ``forward_discourse`` script with the ``--cache-only``option.
+To warm up the cache, we'll run the ``forward_discourse`` script with the ``--cache-only`` option.
 
-.. code:: bash
+.. code-block:: bash
 
    forward_discourse config.json --cache-only
 
@@ -80,28 +85,28 @@ The bot works best when it regularly monitors a Discourse site for new topics.
 It's useful to create a shell script to contain all of the script arguments.
 For example, create a script called ``run_mailbot.sh``:
 
-.. code:: bash
+.. code-block:: bash
 
    #!/bin/bash
    source /home/ec2-user/.bash_profile
    source activate community_mailbot
    forward_discourse /home/ec2-user/config.json
 
-   echo "$(date) Ran forward_discourse" > /home/ec2-user/forward_discourse.log
+   echo "$(date) Ran forward_discourse"
 
-This script setups up the shell environment, loads a Python environment, and then runs the mailbot.
+This script sets up up the shell environment, loads a Python environment, and then runs the mailbot.
 
 Then instruct ``cron`` to run this script every 10 minutes
 
 First, open the ``crontab`` in your terminal
 
-.. code:: bash
+.. code-block:: bash
 
    crontab -e
 
 And add a line for the bot
 
-.. code:: bash
+.. code-block:: bash
 
     */10 * * * * /home/ec2-user/run_mailbot.sh
 
@@ -112,7 +117,7 @@ Development
 
 To develop on the ``community_mailbot``, you'll need to clone the repository and install a development copy (preferably in a ``virtualenv``):
 
-.. code:: bash
+.. code-block:: bash
 
    git clone https://github.com/lsst-sqre/community_mailbot.git
    cd community_mailbot
@@ -120,7 +125,7 @@ To develop on the ``community_mailbot``, you'll need to clone the repository and
 
 To run the test suite:
 
-.. code:: bash
+.. code-block:: bash
 
     python -m unittest discover -s community_mailbot/tests
 
