@@ -2,6 +2,8 @@
 community_mailbot
 =================
 
+.. image:: https://img.shields.io/pypi/v/community_mailbot.svg
+
 The ``community_mailbot`` is a friendly bot that tells subscribers to LSST DM's legacy Mailman email lists about things happening on `community.lsst.org <http://community.lsst.org>`_.
 
 The bot likes to be awakened regularly by ``cron``; each time it will ask the Discourse server about latest messages in different categories that the bot tracks (you can set this with a simple ``config.json`` file).
@@ -15,7 +17,7 @@ Create a virtual environment running Python 3.5, then:
 
 .. code-block:: bash
 
-   pip install git+https://github.com/lsst-sqre/community_mailbot.git@tickets/DM-3690
+   pip install community_mailbot
 
 Running the community mailbot
 -----------------------------
