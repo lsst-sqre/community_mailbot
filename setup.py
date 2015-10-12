@@ -4,8 +4,10 @@
 # See COPYRIGHT and LICENSE files at the top of the source tree.
 #
 
-from setuptools import setup, find_packages
 import os
+import io
+
+from setuptools import setup, find_packages
 
 
 PACKAGENAME = 'community_mailbot'
@@ -21,9 +23,8 @@ def read(filename):
     full_filename = os.path.join(
         os.path.abspath(os.path.dirname(__file__)),
         filename)
-    return open(full_filename).read()
-
-long_description = read('README.rst')
+    with io.open(full_filename, encoding="utf-8") as f:
+        return f.read()
 
 
 setup(
@@ -32,7 +33,7 @@ setup(
     # (http://www.python.org/dev/peps/pep-0440)
     version='0.1.2.dev',
     description=DESCRIPTION,
-    long_description=long_description,
+    long_description=read('README.rst'),
     url=URL,
     author=AUTHOR,
     author_email=AUTHOR_EMAIL,
