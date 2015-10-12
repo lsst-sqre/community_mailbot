@@ -30,7 +30,7 @@ setup(
     name=PACKAGENAME,
     # Versions should comply with PEP440.
     # (http://www.python.org/dev/peps/pep-0440)
-    version='0.1.1',
+    version='0.1.2.dev',
     description=DESCRIPTION,
     long_description=long_description,
     url=URL,
@@ -39,7 +39,7 @@ setup(
     license=LICENSE,
     classifiers=[
         'Development Status :: 4 - Beta',
-        'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
+        'License :: OSI Approved :: MIT License',
         'Programming Language :: Python :: 3.5',
     ],
     keywords='astronomy discourse email',
