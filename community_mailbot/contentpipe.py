@@ -18,10 +18,18 @@ def clean_discourse_html(html, base_url):
     soup = BeautifulSoup(html, 'html.parser')
 
     for link_tag in soup.find_all('a'):
-        link_tag['href'] = make_absolute_link(link_tag['href'], base_url_parts)
+        try:
+            link_tag['href'] = make_absolute_link(link_tag['href'],
+                                                  base_url_parts)
+        except KeyError:
+            print('Missing href key in HTML cleanup; skipping')
 
     for link_tag in soup.find_all('img'):
-        link_tag['src'] = make_absolute_link(link_tag['src'], base_url_parts)
+        try:
+            link_tag['src'] = make_absolute_link(link_tag['src'],
+                                                 base_url_parts)
+        except KeyError:
+            print('Missing src key in HTML cleanup; skipping')
 
     return soup.prettify()
 
